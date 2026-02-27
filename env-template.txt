@@ -1,0 +1,6 @@
+# Database
+DATABASE_URL="postgresql://postgres:%40Waxmangme86@localhost:5432/kevincab?schema=public"
+
+# NextAuth - Generate a new secret with: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+NEXTAUTH_SECRET="your-generated-secret-here"
+NEXTAUTH_URL="http://localhost:3000"

@@ -31,19 +31,19 @@ export default function About() {
                   width: 128,
                   height: 128,
                   bgcolor: 'secondary.main',
-                  borderRadius: 4,
+                  borderRadius: 0,
                   zIndex: 0,
                 }}
               />
               <Box
                 component="img"
-                src="https://images.unsplash.com/photo-1510672981848-a1c4f1cb5ccf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                alt="Kevincab Experience"
+                src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                alt="Kevincab Professional Service"
                 sx={{
                   position: 'relative',
                   zIndex: 10,
                   width: '100%',
-                  borderRadius: 4,
+                  borderRadius: 0,
                   boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
                 }}
               />
@@ -68,7 +68,7 @@ export default function About() {
                 on the Road.
               </Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary', mb: 5, lineHeight: 1.8, fontSize: '1.1rem' }}>
-                At Kevincab, we don't just see a journey; we see a commitment to safety, timeliness, 
+                At Kevincab Tour and Travel, we don't just see a journey; we see a commitment to safety, timeliness, 
                 and Kenyan warmth. Our fleet is maintained to global standards to ensure your comfort.
               </Typography>
 
@@ -81,7 +81,7 @@ export default function About() {
                         width: 48,
                         height: 48,
                         bgcolor: '#f5f5f5',
-                        borderRadius: 2,
+                        borderRadius: 0,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

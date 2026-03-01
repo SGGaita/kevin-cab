@@ -31,6 +31,19 @@ export default function BookingForm() {
       });
 
       if (response.ok) {
+        const whatsappMessage = `*New Booking Request*\n\n` +
+          `*Customer:* ${formData.customerName}\n` +
+          `*Phone:* ${formData.customerPhone}\n` +
+          `*Pickup:* ${formData.pickupLocation}\n` +
+          `*Destination:* ${formData.destination}\n` +
+          `*Date:* ${formData.bookingDate}\n` +
+          `*Service Type:* ${formData.serviceType}\n` +
+          `\n` +
+          `_Please acknowledge receipt of this trip._`;
+        
+        const whatsappUrl = `https://wa.me/254716406998?text=${encodeURIComponent(whatsappMessage)}`;
+        window.open(whatsappUrl, '_blank');
+
         setFormStatus('success');
         setFormData({
           customerName: '',
@@ -51,14 +64,14 @@ export default function BookingForm() {
 
   if (formStatus === 'success') {
     return (
-      <Card sx={{ borderRadius: 4, boxShadow: 3 }}>
+      <Card sx={{ borderRadius: 0, boxShadow: 3, border: '2px solid', borderColor: 'secondary.main' }}>
         <CardContent sx={{ p: 6, textAlign: 'center' }}>
           <Box
             sx={{
               width: 80,
               height: 80,
-              bgcolor: 'success.light',
-              borderRadius: '50%',
+              bgcolor: '#f5f5f5',
+              borderRadius: 0,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -66,7 +79,7 @@ export default function BookingForm() {
               mb: 3,
             }}
           >
-            <CheckCircle sx={{ fontSize: 40, color: 'success.dark' }} />
+            <CheckCircle sx={{ fontSize: 40, color: 'secondary.dark' }} />
           </Box>
           <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
             Booking Received!
@@ -86,14 +99,16 @@ export default function BookingForm() {
   }
 
   return (
-    <Card sx={{ borderRadius: 4, boxShadow: 3 }}>
+    <Card sx={{ borderRadius: 0, boxShadow: 3, border: '2px solid', borderColor: 'secondary.main' }}>
       <CardContent sx={{ p: { xs: 4, md: 6 } }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-          Instant Booking
-        </Typography>
-        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 5 }}>
-          Available 24/7 across all 47 counties.
-        </Typography>
+        <Box sx={{ mb: 5, pb: 3, borderBottom: '2px solid', borderColor: 'secondary.main' }}>
+          <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, letterSpacing: -1 }}>
+            Instant Booking
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '1.1rem' }}>
+            Available 24/7 across all 47 counties.
+          </Typography>
+        </Box>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
@@ -183,12 +198,14 @@ export default function BookingForm() {
             size="large"
             disabled={formStatus === 'sending'}
             sx={{
-              py: 2,
-              bgcolor: 'black',
-              color: 'white',
+              py: 2.5,
+              bgcolor: 'secondary.main',
+              color: 'black',
               fontWeight: 'bold',
               fontSize: '1.1rem',
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' },
+              borderRadius: 0,
+              boxShadow: '0 4px 14px rgba(255, 193, 7, 0.3)',
+              '&:hover': { bgcolor: 'secondary.dark', boxShadow: '0 6px 20px rgba(255, 193, 7, 0.4)' },
             }}
           >
             {formStatus === 'sending' ? 'Processing...' : 'Request Quote & Book'}

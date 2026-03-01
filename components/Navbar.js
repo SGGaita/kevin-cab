@@ -19,6 +19,7 @@ export default function Navbar() {
     { name: 'Home', href: '#home' },
     { name: 'Services', href: '#services' },
     { name: 'About', href: '#about' },
+    { name: 'Testimonial', href: '#testimonial' },
   ];
 
   return (
@@ -40,7 +41,7 @@ export default function Navbar() {
                 sx={{ 
                   bgcolor: 'secondary.main', 
                   p: 1, 
-                  borderRadius: 2,
+                  borderRadius: 0,
                   display: 'flex',
                   alignItems: 'center',
                   transition: 'transform 0.3s',
@@ -50,7 +51,7 @@ export default function Navbar() {
                 <DirectionsCar sx={{ color: 'black' }} />
               </Box>
               <Box sx={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'white' }}>
-                KEVINCAB
+                KEVINCAB TOUR AND TRAVEL
               </Box>
             </Box>
 
@@ -75,30 +76,15 @@ export default function Navbar() {
                 sx={{ 
                   fontWeight: 'bold',
                   boxShadow: '0 4px 14px rgba(255, 193, 7, 0.2)',
+                  borderRadius: 0,
                 }}
               >
                 Book Now
               </Button>
-              <Button 
-                component={Link}
-                href="/login"
-                variant="outlined"
-                sx={{ 
-                  color: 'white',
-                  borderColor: 'white',
-                  fontWeight: 600,
-                  '&:hover': { 
-                    borderColor: 'secondary.main',
-                    color: 'secondary.main'
-                  }
-                }}
-              >
-                Driver Login
-              </Button>
             </Box>
 
             <IconButton 
-              sx={{ display: { xs: 'flex', md: 'none' }, color: 'white' }}
+              sx={{ display: 'none' }}
               onClick={() => setIsMenuOpen(true)}
             >
               <MenuIcon />
@@ -145,26 +131,9 @@ export default function Navbar() {
                 color="secondary"
                 fullWidth
                 onClick={() => setIsMenuOpen(false)}
-                sx={{ py: 2, fontSize: '1.1rem' }}
+                sx={{ py: 2, fontSize: '1.1rem', borderRadius: 0 }}
               >
                 Book a Ride
-              </Button>
-            </ListItem>
-            <ListItem sx={{ mt: 2 }}>
-              <Button 
-                component={Link}
-                href="/login"
-                variant="outlined"
-                fullWidth
-                onClick={() => setIsMenuOpen(false)}
-                sx={{ 
-                  py: 2, 
-                  fontSize: '1.1rem',
-                  color: 'white',
-                  borderColor: 'white',
-                }}
-              >
-                Driver Login
               </Button>
             </ListItem>
           </List>

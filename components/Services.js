@@ -1,111 +1,114 @@
 'use client';
 
-import { Box, Container, Typography, Card, CardContent } from '@mui/material';
-import { Flight, LocationOn, Business } from '@mui/icons-material';
+import { Box, Typography, Button } from '@mui/material';
+import { Flight, Hotel, Park } from '@mui/icons-material';
 
 const services = [
   {
     icon: Flight,
-    title: 'Airport Transfers',
-    description: 'Prompt transfers to JKIA, Wilson, and Moi International. We track your flight status in real-time to ensure zero wait time.',
+    title: 'Airport & Hotel Transfers',
+    description: 'Reliable transfers from airport to hotel, guesthouse to airport, ensuring timely and comfortable transportation with professional drivers.',
   },
   {
-    icon: LocationOn,
-    title: 'Inter-County Trips',
-    description: 'Reliable long-distance travel from Nairobi to any town including Nakuru, Kisumu, and Eldoret at competitive flat rates.',
+    icon: Hotel,
+    title: 'Transfer from Hotel to Hotel',
+    description: 'Seamless transfers between hotels for your convenience during your stay.',
   },
   {
-    icon: Business,
-    title: 'Corporate Logistics',
-    description: 'Exclusive transport management for your employees and high-profile guests with monthly billing cycles.',
+    icon: Park,
+    title: 'National Park Tours & Transfers',
+    description: 'Comfortable transportation from your hotel to national parks and guided safari tours to experience the beauty of Kenya\'s wildlife.',
   },
 ];
 
 export default function Services() {
   return (
-    <Box id="services" sx={{ py: 12, bgcolor: '#f5f5f5' }}>
-      <Container maxWidth="lg">
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', mb: 8, gap: 3 }}>
-          <Box sx={{ maxWidth: 600 }}>
-            <Typography 
-              variant="overline" 
-              sx={{ color: 'secondary.main', fontWeight: 'bold', letterSpacing: 2 }}
-            >
-              What we do
-            </Typography>
-            <Typography variant="h2" sx={{ mt: 1, fontWeight: 800, color: 'text.primary' }}>
-              Tailored Transportation Solutions
-            </Typography>
-          </Box>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              color: 'text.secondary', 
-              maxWidth: 400,
-              alignSelf: 'flex-end'
+    <Box id="services" sx={{ py: 12, bgcolor: 'white' }}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
+        <Box sx={{ flex: { xs: '1 1 100%', lg: '1 1 40%' } }}>
+          <Box
+            component="img"
+            src="/uploads/service-1.png"
+            alt="Kevincab Taxi"
+            sx={{
+              width: '100%',
+              height: 'auto',
+              objectFit: 'cover',
+              display: 'block',
             }}
-          >
-            We provide more than just a ride; we provide peace of mind across Kenya.
-          </Typography>
+          />
         </Box>
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-          {services.map((service, index) => (
-            <Box key={index} sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(33.333% - 22px)' } }}>
-              <Card 
-                sx={{ 
-                  height: '100%',
-                  borderRadius: 4,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  transition: 'all 0.3s',
-                  '&:hover': {
+        <Box sx={{ flex: { xs: '1 1 100%', lg: '1 1 60%' }, px: { xs: 3, md: 8 }, py: { xs: 6, lg: 0 } }}>
+          <Typography 
+            variant="overline" 
+            sx={{ color: 'text.secondary', fontWeight: 'bold', letterSpacing: 2, fontSize: '0.85rem' }}
+          >
+            WE DO MORE
+          </Typography>
+          <Typography variant="h2" sx={{ mt: 1, mb: 3, fontWeight: 900, color: 'text.primary', letterSpacing: -1 }}>
+            THAN YOU WISH
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'text.secondary', mb: 6, lineHeight: 1.8 }}>
+            Professional transfer services and exciting national park tours across Kenya. Your trusted travel partner since 2018.
+          </Typography>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mb: 6 }}>
+            {services.map((service, index) => (
+              <Box key={index} sx={{ display: 'flex', gap: 3 }}>
+                <Box 
+                  sx={{ 
+                    flexShrink: 0,
+                    width: 56,
+                    height: 56,
+                    borderRadius: 0,
+                    border: '2px solid',
                     borderColor: 'secondary.main',
-                    boxShadow: '0 12px 40px rgba(255, 193, 7, 0.1)',
-                    transform: 'translateY(-4px)',
-                  },
-                }}
-              >
-                <CardContent sx={{ p: 4 }}>
-                  <Box 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <service.icon 
                     sx={{ 
-                      width: 56,
-                      height: 56,
-                      borderRadius: 3,
-                      bgcolor: 'rgba(255, 193, 7, 0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mb: 3,
-                      transition: 'all 0.3s',
-                      '.MuiCard-root:hover &': {
-                        bgcolor: 'secondary.main',
-                      },
-                    }}
-                  >
-                    <service.icon 
-                      sx={{ 
-                        fontSize: 28,
-                        color: 'secondary.dark',
-                        transition: 'color 0.3s',
-                        '.MuiCard-root:hover &': {
-                          color: 'black',
-                        },
-                      }} 
-                    />
-                  </Box>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
+                      fontSize: 28,
+                      color: 'secondary.main',
+                    }} 
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1, textTransform: 'uppercase' }}>
                     {service.title}
                   </Typography>
-                  <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.7 }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.7, mb: 1 }}>
                     {service.description}
                   </Typography>
-                </CardContent>
-              </Card>
-            </Box>
-          ))}
+                </Box>
+              </Box>
+            ))}
+          </Box>
+
+          <Button
+            href="#contact"
+            variant="contained"
+            color="secondary"
+            size="large"
+            sx={{
+              px: 5,
+              py: 1.5,
+              fontWeight: 'bold',
+              fontSize: '1rem',
+              borderRadius: 0,
+              boxShadow: '0 4px 14px rgba(255, 193, 7, 0.3)',
+              '&:hover': {
+                boxShadow: '0 6px 20px rgba(255, 193, 7, 0.4)',
+              },
+            }}
+          >
+            BOOK NOW
+          </Button>
         </Box>
-      </Container>
+      </Box>
     </Box>
   );
 }

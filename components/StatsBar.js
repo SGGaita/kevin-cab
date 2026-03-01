@@ -3,8 +3,8 @@
 import { Box, Container, Typography } from '@mui/material';
 
 const stats = [
-  { label: 'Riders Served', value: '15,000+' },
-  { label: 'Vetted Drivers', value: '120+' },
+  { label: 'Counties', value: '47' },
+  { label: 'Availability', value: '24/7' },
   { label: 'Customer Rating', value: '4.9/5' },
   { label: 'Response Time', value: '5-10m' },
 ];

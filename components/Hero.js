@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Box, Container, Typography, Button, Chip } from '@mui/material';
-import { ChevronRight } from '@mui/icons-material';
+import { ChevronRight, DirectionsCar } from '@mui/icons-material';
 
 export default function Hero() {
   const [heroData, setHeroData] = useState(null);
@@ -170,6 +170,61 @@ export default function Hero() {
           </Button>
         </Box>
       </Container>
+
+      {/* Scroll Down Indicator with Car Animation */}
+      <Box
+        onClick={() => {
+          document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+        }}
+        sx={{
+          position: 'absolute',
+          bottom: 40,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 10,
+          cursor: 'pointer',
+          textAlign: 'center',
+          display: { xs: 'none', md: 'block' },
+        }}
+      >
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'rgba(255,255,255,0.7)',
+            display: 'block',
+            mb: 2,
+            fontWeight: 600,
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+          }}
+        >
+          Scroll Down
+        </Typography>
+        <Box
+          sx={{
+            position: 'relative',
+            width: 60,
+            height: 60,
+            mx: 'auto',
+          }}
+        >
+          <DirectionsCar
+            sx={{
+              fontSize: 40,
+              color: 'secondary.main',
+              animation: 'carBounce 2s ease-in-out infinite',
+              '@keyframes carBounce': {
+                '0%, 100%': {
+                  transform: 'translateY(0)',
+                },
+                '50%': {
+                  transform: 'translateY(10px)',
+                },
+              },
+            }}
+          />
+        </Box>
+      </Box>
     </Box>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Box, Button, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Container } from '@mui/material';
-import { Menu as MenuIcon, Close as CloseIcon, DirectionsCar } from '@mui/icons-material';
+import { Menu as MenuIcon, Close as CloseIcon, DirectionsCar, Phone } from '@mui/icons-material';
 import Link from 'next/link';
 
 export default function Navbar() {
@@ -35,8 +35,8 @@ export default function Navbar() {
         }}
       >
         <Container maxWidth="lg">
-          <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}>
+          <Toolbar disableGutters sx={{ justifyContent: 'space-between', gap: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', flexShrink: 0 }}>
               <Box 
                 sx={{ 
                   bgcolor: 'secondary.main', 
@@ -50,12 +50,12 @@ export default function Navbar() {
               >
                 <DirectionsCar sx={{ color: 'black' }} />
               </Box>
-              <Box sx={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'white' }}>
+              <Box sx={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'white', whiteSpace: 'nowrap' }}>
                 KEVINCAB TOUR AND TRAVEL
               </Box>
             </Box>
 
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
               {navLinks.map((link) => (
                 <Button 
                   key={link.name}
@@ -81,6 +81,25 @@ export default function Navbar() {
               >
                 Book Now
               </Button>
+              <Box 
+                component="a" 
+                href="tel:+254712345678"
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 1,
+                  color: 'white',
+                  textDecoration: 'none',
+                  fontSize: '1.1rem',
+                  fontWeight: 600,
+                  transition: 'color 0.3s',
+                  whiteSpace: 'nowrap',
+                  '&:hover': { color: 'secondary.main' }
+                }}
+              >
+                <Phone sx={{ fontSize: '1.3rem' }} />
+                <Box component="span">+254 712 345 678</Box>
+              </Box>
             </Box>
 
             <IconButton 

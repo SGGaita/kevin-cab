@@ -28,7 +28,7 @@ export default function Contact() {
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <Card
                     component="a"
-                    href="tel:+254716406998"
+                    href="tel:+254712345678"
                     sx={{
                       textDecoration: 'none',
                       borderRadius: 0,
@@ -61,7 +61,7 @@ export default function Contact() {
                           Call Us
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                          +254 716 406 998
+                          +254 712 345 678
                         </Typography>
                       </Box>
                     </CardContent>
@@ -69,7 +69,7 @@ export default function Contact() {
 
                   <Card
                     component="a"
-                    href="mailto:bookings@kevincab.co.ke"
+                    href="mailto:karugokevin527@gmail.com"
                     sx={{
                       textDecoration: 'none',
                       borderRadius: 0,
@@ -101,8 +101,8 @@ export default function Contact() {
                         <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 'bold', textTransform: 'uppercase' }}>
                           Email Us
                         </Typography>
-                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                          bookings@kevincab.co.ke
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                          karugokevin527@gmail.com
                         </Typography>
                       </Box>
                     </CardContent>

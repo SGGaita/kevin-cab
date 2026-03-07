@@ -200,7 +200,27 @@ npx prisma migrate reset
 
 ## Deployment
 
-### Vercel (Recommended)
+### cPanel with Node.js (Production Ready)
+
+Complete deployment solution for cPanel hosting with Node.js support.
+
+**Quick Start:**
+- See `QUICK-START.md` for 30-minute deployment
+- See `DEPLOYMENT.md` for comprehensive guide
+- See `DEPLOYMENT-CHECKLIST.md` for step-by-step checklist
+
+**Requirements:**
+- cPanel with Node.js 20.11.0+
+- PostgreSQL database
+- SSH/Terminal access (recommended)
+
+**Key Files:**
+- `server.js` - Custom server for cPanel
+- `.cpanel.yml` - Git auto-deployment
+- `next.config.mjs` - Production configuration
+- `scripts/deploy.sh` - Deployment automation
+
+### Vercel (Alternative)
 
 1. Push your code to GitHub
 2. Import project in Vercel
@@ -210,7 +230,7 @@ npx prisma migrate reset
 ### Other Platforms
 
 Ensure your hosting platform supports:
-- Node.js 18+
+- Node.js 20.11.0+
 - PostgreSQL database
 - Environment variables
 

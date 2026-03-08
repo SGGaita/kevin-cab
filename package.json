@@ -15,7 +15,7 @@
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "node scripts/seed.js",
     "db:studio": "npx prisma studio",
-    "deploy:build": "npm install --production && npx prisma generate && npx prisma migrate deploy && npm run build",
+    "deploy:build": "npm install --omit=dev --ignore-scripts && npx prisma generate && npx prisma migrate deploy && npm run build",
     "deploy:start": "NODE_ENV=production node server.js",
     "prod": "NODE_ENV=production node server.js"
   },
@@ -30,7 +30,6 @@
     "dotenv": "^17.3.1",
     "next": "16.1.6",
     "next-auth": "^4.24.13",
-    "pg": "^8.19.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

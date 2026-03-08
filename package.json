@@ -11,11 +11,9 @@
     "build": "next build",
     "start": "next start",
     "setup": "node scripts/setup-env.js",
-    "db:generate": "npx prisma generate",
-    "db:migrate": "npx prisma migrate dev",
+    "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed.js",
-    "db:studio": "npx prisma studio",
-    "deploy:build": "npm install --omit=dev --ignore-scripts && npx prisma generate && npx prisma migrate deploy && npm run build",
+    "deploy:build": "npm install --omit=dev && npm run build",
     "deploy:start": "NODE_ENV=production node server.js",
     "prod": "NODE_ENV=production node server.js"
   },
@@ -25,16 +23,15 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.8",
-    "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.3.1",
     "next": "16.1.6",
     "next-auth": "^4.24.13",
+    "pg": "^8.13.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "prisma": "^5.22.0"
+    "@tailwindcss/postcss": "^4"
   }
 }

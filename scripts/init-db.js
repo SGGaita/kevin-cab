@@ -3,10 +3,27 @@ const fs = require('fs');
 const path = require('path');
 
 async function initDatabase() {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL?.includes('localhost') ? false : { rejectUnauthorized: false }
-  });
+  // Check if DATABASE_URL is set
+  if (!process.env.DATABASE_URL) {
+    console.error('ERROR: DATABASE_URL environment variable is not set!');
+    console.log('Please set DATABASE_URL in your .env file');
+    console.log('Example: DATABASE_URL=postgresql://user:password@localhost:5432/dbname');
+    process.exit(1);
+  }
+
+  const isLocal = process.env.DATABASE_URL.includes('localhost') || 
+                  process.env.DATABASE_URL.includes('127.0.0.1');
+
+  const poolConfig = {
+    connectionString: process.env.DATABASE_URL
+  };
+
+  // Only add SSL config if not local
+  if (!isLocal) {
+    poolConfig.ssl = { rejectUnauthorized: false };
+  }
+
+  const pool = new Pool(poolConfig);
 
   try {
     console.log('Connecting to database...');

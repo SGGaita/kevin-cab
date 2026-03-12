@@ -69,7 +69,7 @@ if (Test-Path ".cpanel.yml") {
 Write-Host "✓ Deployment package created in '$deployDir' directory" -ForegroundColor Green
 
 # Step 5: Create deployment instructions
-$instructions = @"
+$instructions = @'
 === DEPLOYMENT INSTRUCTIONS ===
 
 1. Upload the contents of the 'deploy-package' folder to your cPanel server
@@ -111,15 +111,17 @@ If you prefer Git deployment:
    npm run db:init
    npm run deploy:start
 
-"@
+'@
 
 $instructions | Out-File -FilePath "$deployDir/DEPLOY-INSTRUCTIONS.txt" -Encoding UTF8
 
-Write-Host "`n=== BUILD COMPLETE ===" -ForegroundColor Green
+Write-Host ""
+Write-Host "=== BUILD COMPLETE ===" -ForegroundColor Green
 Write-Host "Deployment package ready in: $deployDir" -ForegroundColor Cyan
 Write-Host "See $deployDir/DEPLOY-INSTRUCTIONS.txt for upload instructions" -ForegroundColor Cyan
-Write-Host "`nNext steps:" -ForegroundColor Yellow
-Write-Host "1. Upload '$deployDir' contents to your cPanel server" -ForegroundColor White
-Write-Host "2. Run 'npm run deploy:install' on the server" -ForegroundColor White
-Write-Host "3. Run 'npm run db:init' to initialize database" -ForegroundColor White
-Write-Host "4. Start the app with 'npm run deploy:start'" -ForegroundColor White
+Write-Host ""
+Write-Host "Next steps:" -ForegroundColor Yellow
+Write-Host "1. Upload deploy-package contents to your cPanel server" -ForegroundColor White
+Write-Host "2. Run npm run deploy:install on the server" -ForegroundColor White
+Write-Host "3. Run npm run db:init to initialize database" -ForegroundColor White
+Write-Host "4. Start the app with npm run deploy:start" -ForegroundColor White

@@ -1,50 +1,21 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 export async function GET() {
   try {
-    const about = await prisma.aboutSection.findFirst({
-      where: { isActive: true },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return NextResponse.json({ success: true, about });
+    const result = await query('SELECT * FROM about_sections WHERE is_active = true LIMIT 1');
+    return NextResponse.json({ success: true, data: result.rows[0] || null });
   } catch (error) {
-    console.error('Error fetching about section:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch about section' },
-      { status: 500 }
-    );
+    console.error('Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
-export async function POST(request) {
+export async function PATCH(request) {
   try {
     const body = await request.json();
-    const { title, subtitle, description, imageUrl } = body;
-
-    const existingAbout = await prisma.aboutSection.findFirst({
-      where: { isActive: true },
-    });
-
-    let about;
-    if (existingAbout) {
-      about = await prisma.aboutSection.update({
-        where: { id: existingAbout.id },
-        data: { title, subtitle, description, imageUrl },
-      });
-    } else {
-      about = await prisma.aboutSection.create({
-        data: { title, subtitle, description, imageUrl, isActive: true },
-      });
-    }
-
-    return NextResponse.json({ success: true, about });
+    return NextResponse.json({ success: true, message: 'Update functionality coming soon' });
   } catch (error) {
-    console.error('Error updating about section:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to update about section' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

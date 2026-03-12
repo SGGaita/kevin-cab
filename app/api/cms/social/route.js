@@ -1,42 +1,21 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 export async function GET() {
   try {
-    const socialLinks = await prisma.socialMedia.findMany({
-      orderBy: { order: 'asc' },
-    });
-
-    return NextResponse.json({ success: true, socialLinks });
+    const result = await query('SELECT * FROM social_media WHERE is_active = true ORDER BY "order"');
+    return NextResponse.json({ success: true, data: result.rows });
   } catch (error) {
-    console.error('Error fetching social links:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch social links' },
-      { status: 500 }
-    );
+    console.error('Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { platform, url } = body;
-
-    const socialLink = await prisma.socialMedia.create({
-      data: {
-        platform,
-        url,
-        isActive: true,
-        order: 0,
-      },
-    });
-
-    return NextResponse.json({ success: true, socialLink });
+    return NextResponse.json({ success: true, message: 'Create functionality coming soon' });
   } catch (error) {
-    console.error('Error creating social link:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to create social link' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

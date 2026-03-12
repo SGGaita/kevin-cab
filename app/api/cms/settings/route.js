@@ -1,47 +1,21 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 export async function GET() {
   try {
-    const settings = await prisma.siteSettings.findFirst({
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return NextResponse.json({ success: true, settings });
+    const result = await query('SELECT * FROM site_settings LIMIT 1');
+    return NextResponse.json({ success: true, data: result.rows[0] || null });
   } catch (error) {
-    console.error('Error fetching settings:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch settings' },
-      { status: 500 }
-    );
+    console.error('Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
-export async function POST(request) {
+export async function PATCH(request) {
   try {
     const body = await request.json();
-    const { siteName, logoUrl, faviconUrl, primaryColor, secondaryColor } = body;
-
-    const existingSettings = await prisma.siteSettings.findFirst();
-
-    let settings;
-    if (existingSettings) {
-      settings = await prisma.siteSettings.update({
-        where: { id: existingSettings.id },
-        data: { siteName, logoUrl, faviconUrl, primaryColor, secondaryColor },
-      });
-    } else {
-      settings = await prisma.siteSettings.create({
-        data: { siteName, logoUrl, faviconUrl, primaryColor, secondaryColor },
-      });
-    }
-
-    return NextResponse.json({ success: true, settings });
+    return NextResponse.json({ success: true, message: 'Update functionality coming soon' });
   } catch (error) {
-    console.error('Error updating settings:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to update settings' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

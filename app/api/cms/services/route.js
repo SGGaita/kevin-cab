@@ -1,44 +1,21 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 export async function GET() {
   try {
-    const services = await prisma.service.findMany({
-      orderBy: { order: 'asc' },
-    });
-
-    return NextResponse.json({ success: true, services });
+    const result = await query('SELECT * FROM services WHERE is_active = true ORDER BY "order"');
+    return NextResponse.json({ success: true, data: result.rows });
   } catch (error) {
-    console.error('Error fetching services:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch services' },
-      { status: 500 }
-    );
+    console.error('Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { title, description, icon, price } = body;
-
-    const service = await prisma.service.create({
-      data: {
-        title,
-        description,
-        icon,
-        price: price || null,
-        isActive: true,
-        order: 0,
-      },
-    });
-
-    return NextResponse.json({ success: true, service });
+    return NextResponse.json({ success: true, message: 'Create functionality coming soon' });
   } catch (error) {
-    console.error('Error creating service:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to create service' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

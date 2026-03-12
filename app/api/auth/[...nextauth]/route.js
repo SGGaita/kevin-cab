@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
-import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 
 const handler = NextAuth({
   providers: [
@@ -16,9 +16,12 @@ const handler = NextAuth({
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
+        const result = await query(
+          'SELECT id, email, password, name, role FROM users WHERE email = $1',
+          [credentials.email]
+        );
+
+        const user = result.rows[0];
 
         if (!user) {
           return null;

@@ -1,10 +1,39 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Box, Container, Typography, Card, CardContent } from '@mui/material';
 import { Phone, Email } from '@mui/icons-material';
 import BookingForm from './BookingForm';
 
 export default function Contact() {
+  const [contactInfo, setContactInfo] = useState({
+    phone: '+254 712 345 678',
+    email: 'karugokevin527@gmail.com',
+    headingText: 'Need Immediate Help?',
+    subtitleText: 'Our dispatch team is available 24/7. Call or WhatsApp for urgent bookings.'
+  });
+
+  useEffect(() => {
+    fetchContactInfo();
+  }, []);
+
+  const fetchContactInfo = async () => {
+    try {
+      const response = await fetch('/api/cms/contact');
+      const result = await response.json();
+      if (result.success && result.data) {
+        setContactInfo({
+          phone: result.data.phone || '+254 712 345 678',
+          email: result.data.email || 'karugokevin527@gmail.com',
+          headingText: result.data.heading_text || 'Need Immediate Help?',
+          subtitleText: result.data.subtitle_text || 'Our dispatch team is available 24/7. Call or WhatsApp for urgent bookings.'
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching contact info:', error);
+    }
+  };
+
   return (
     <Box id="contact" sx={{ py: 12, bgcolor: '#f5f5f5' }}>
       <Container maxWidth="lg">
@@ -17,18 +46,18 @@ export default function Contact() {
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%', gap: 6 }}>
               <Box id="help">
                 <Box sx={{ mb: 5, pb: 3, borderBottom: '2px solid', borderColor: 'secondary.main' }}>
-                  <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, letterSpacing: -1 }}>
-                    Need Immediate Help?
+                  <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, letterSpacing: -1, fontSize: { xs: '1.75rem', md: '2rem' } }}>
+                    {contactInfo.headingText}
                   </Typography>
                   <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '1.1rem', lineHeight: 1.8 }}>
-                    Our dispatch team is available 24/7. Call or WhatsApp for urgent bookings.
+                    {contactInfo.subtitleText}
                   </Typography>
                 </Box>
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <Card
                     component="a"
-                    href="tel:+254712345678"
+                    href={`tel:${contactInfo.phone.replace(/\s/g, '')}`}
                     sx={{
                       textDecoration: 'none',
                       borderRadius: 0,
@@ -61,7 +90,7 @@ export default function Contact() {
                           Call Us
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                          +254 712 345 678
+                          {contactInfo.phone}
                         </Typography>
                       </Box>
                     </CardContent>
@@ -69,7 +98,7 @@ export default function Contact() {
 
                   <Card
                     component="a"
-                    href="mailto:karugokevin527@gmail.com"
+                    href={`mailto:${contactInfo.email}`}
                     sx={{
                       textDecoration: 'none',
                       borderRadius: 0,
@@ -102,7 +131,7 @@ export default function Contact() {
                           Email Us
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                          karugokevin527@gmail.com
+                          {contactInfo.email}
                         </Typography>
                       </Box>
                     </CardContent>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Box, Container, Typography, Avatar } from '@mui/material';
 import { FormatQuote, Star } from '@mui/icons-material';
 
-const testimonials = [
+const defaultTestimonials = [
   {
     name: 'Stephen Gaita',
     role: 'Business Traveler',
@@ -23,6 +23,11 @@ const testimonials = [
 
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [testimonials, setTestimonials] = useState(defaultTestimonials);
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,7 +35,25 @@ export default function Testimonials() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [testimonials.length]);
+
+  const fetchTestimonials = async () => {
+    try {
+      const response = await fetch('/api/cms/testimonials');
+      const result = await response.json();
+      if (result.success && result.testimonials && result.testimonials.length > 0) {
+        setTestimonials(result.testimonials.map(t => ({
+          name: t.name,
+          role: t.role,
+          rating: t.rating,
+          text: t.text,
+          avatar: t.avatar_url || t.name.split(' ').map(n => n[0]).join('')
+        })));
+      }
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+    }
+  };
 
   const currentTestimonial = testimonials[currentIndex];
 
@@ -47,7 +70,6 @@ export default function Testimonials() {
         backgroundImage: 'url(https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
         position: 'relative',
         '&::before': {
           content: '""',
@@ -140,6 +162,32 @@ export default function Testimonials() {
           >
             - {currentTestimonial.name}
           </Typography>
+
+          {currentTestimonial.role && (
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: 'rgba(255, 255, 255, 0.7)',
+                mb: 1,
+              }}
+            >
+              {currentTestimonial.role}
+            </Typography>
+          )}
+
+          {currentTestimonial.rating && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5, mb: 2 }}>
+              {[...Array(5)].map((_, i) => (
+                <Star 
+                  key={i} 
+                  sx={{ 
+                    fontSize: 20, 
+                    color: i < currentTestimonial.rating ? 'secondary.main' : 'rgba(255, 255, 255, 0.3)'
+                  }} 
+                />
+              ))}
+            </Box>
+          )}
 
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5, mt: 2 }}>
             {testimonials.map((_, index) => (

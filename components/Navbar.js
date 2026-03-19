@@ -2,40 +2,168 @@
 
 import { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Box, Button, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Container } from '@mui/material';
-import { Menu as MenuIcon, Close as CloseIcon, DirectionsCar, Phone } from '@mui/icons-material';
+import { Menu as MenuIcon, Close as CloseIcon, DirectionsCar, Phone, Email } from '@mui/icons-material';
 import Link from 'next/link';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [siteName, setSiteName] = useState('KEVINCAB TOUR AND TRAVEL');
+  const [phone, setPhone] = useState('+254 712 345 678');
+  const [email, setEmail] = useState('info@kevincab.com');
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    fetchSiteInfo();
+  }, []);
+
+  const fetchSiteInfo = async () => {
+    try {
+      const [settingsRes, contactRes] = await Promise.all([
+        fetch('/api/cms/settings'),
+        fetch('/api/cms/contact')
+      ]);
+      
+      const settings = await settingsRes.json();
+      const contact = await contactRes.json();
+      
+      if (settings.success && settings.data) {
+        setSiteName(settings.data.site_name || 'KEVINCAB TOUR AND TRAVEL');
+      }
+      
+      if (contact.success && contact.data) {
+        setPhone(contact.data.phone || '+254 712 345 678');
+        setEmail(contact.data.email || 'info@kevincab.com');
+      }
+    } catch (error) {
+      console.error('Error fetching site info:', error);
+    }
+  };
 
   const navLinks = [
     { name: 'Home', href: '#home' },
     { name: 'Services', href: '#services' },
     { name: 'About', href: '#about' },
+    { name: 'Gallery', href: '#gallery' },
     { name: 'Testimonial', href: '#testimonial' },
   ];
 
   return (
     <>
+      {/* Top Contact Bar - Desktop */}
+      <Box
+        sx={{
+          bgcolor: 'rgba(0, 0, 0, 0.9)',
+          height: '32px',
+          display: 'flex',
+          alignItems: 'center',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1201,
+          display: { xs: 'none', md: 'flex' }
+        }}
+      >
+        <Container maxWidth="xl">
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 4, alignItems: 'center' }}>
+            <Box
+              component="a"
+              href={`tel:${phone.replace(/\s/g, '')}`}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                color: 'white',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                transition: 'color 0.3s',
+                '&:hover': { color: 'secondary.main' }
+              }}
+            >
+              <Phone sx={{ fontSize: '1rem' }} />
+              <Box component="span">{phone}</Box>
+            </Box>
+            <Box
+              component="a"
+              href={`mailto:${email}`}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                color: 'white',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                transition: 'color 0.3s',
+                '&:hover': { color: 'secondary.main' }
+              }}
+            >
+              <Email sx={{ fontSize: '1rem' }} />
+              <Box component="span">{email}</Box>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Top Contact Bar - Mobile */}
+      <Box
+        sx={{
+          bgcolor: 'rgba(0, 0, 0, 0.9)',
+          height: '32px',
+          display: 'flex',
+          alignItems: 'center',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1201,
+          display: { xs: 'flex', md: 'none' }
+        }}
+      >
+        <Container maxWidth="xl">
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box
+              component="a"
+              href={`tel:${phone.replace(/\s/g, '')}`}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                color: 'white',
+                textDecoration: 'none',
+                fontSize: '0.85rem',
+                transition: 'color 0.3s',
+                '&:hover': { color: 'secondary.main' }
+              }}
+            >
+              <Phone sx={{ fontSize: '1rem' }} />
+              <Box component="span">{phone}</Box>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
       <AppBar 
         position="fixed" 
         sx={{ 
-          backgroundColor: isScrolled ? 'rgba(0, 0, 0, 0.95)' : 'transparent',
-          backdropFilter: isScrolled ? 'blur(10px)' : 'none',
-          boxShadow: isScrolled ? 2 : 0,
+          top: { xs: '32px', md: '32px' },
+          backgroundColor: mounted && isScrolled ? 'rgba(0, 0, 0, 0.95)' : 'transparent',
+          backdropFilter: mounted && isScrolled ? 'blur(10px)' : 'none',
+          boxShadow: 'none',
           transition: 'all 0.3s ease',
-          py: isScrolled ? 0.5 : 1.5,
+          py: mounted && isScrolled ? 0.5 : 1.5,
         }}
       >
-        <Container maxWidth="lg">
-          <Toolbar disableGutters sx={{ justifyContent: 'space-between', gap: 3 }}>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters sx={{ justifyContent: 'space-between', gap: 4 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', flexShrink: 0 }}>
               <Box 
                 sx={{ 
@@ -51,7 +179,7 @@ export default function Navbar() {
                 <DirectionsCar sx={{ color: 'black' }} />
               </Box>
               <Box sx={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'white', whiteSpace: 'nowrap' }}>
-                KEVINCAB TOUR AND TRAVEL
+                {siteName}
               </Box>
             </Box>
 
@@ -81,29 +209,10 @@ export default function Navbar() {
               >
                 Book Now
               </Button>
-              <Box 
-                component="a" 
-                href="tel:+254712345678"
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 1,
-                  color: 'white',
-                  textDecoration: 'none',
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                  transition: 'color 0.3s',
-                  whiteSpace: 'nowrap',
-                  '&:hover': { color: 'secondary.main' }
-                }}
-              >
-                <Phone sx={{ fontSize: '1.3rem' }} />
-                <Box component="span">+254 712 345 678</Box>
-              </Box>
             </Box>
 
             <IconButton 
-              sx={{ display: 'none' }}
+              sx={{ display: { xs: 'block', md: 'none' }, color: 'white' }}
               onClick={() => setIsMenuOpen(true)}
             >
               <MenuIcon />

@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { Save } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function SiteSettingsPage() {
   const { data: session, status } = useSession();
@@ -29,6 +30,8 @@ export default function SiteSettingsPage() {
     faviconUrl: '',
     primaryColor: '',
     secondaryColor: '',
+    footerDescription: '',
+    copyrightText: '',
   });
 
   useEffect(() => {
@@ -46,14 +49,16 @@ export default function SiteSettingsPage() {
   const fetchSettings = async () => {
     try {
       const response = await fetch('/api/cms/settings');
-      const data = await response.json();
-      if (data.success && data.settings) {
+      const result = await response.json();
+      if (result.success && result.data) {
         setFormData({
-          siteName: data.settings.siteName,
-          logoUrl: data.settings.logoUrl || '',
-          faviconUrl: data.settings.faviconUrl || '',
-          primaryColor: data.settings.primaryColor,
-          secondaryColor: data.settings.secondaryColor,
+          siteName: result.data.site_name || '',
+          logoUrl: result.data.logo_url || '',
+          faviconUrl: result.data.favicon_url || '',
+          primaryColor: result.data.primary_color || '#000000',
+          secondaryColor: result.data.secondary_color || '#FFD700',
+          footerDescription: result.data.footer_description || '',
+          copyrightText: result.data.copyright_text || '',
         });
       }
     } catch (error) {
@@ -139,38 +144,45 @@ export default function SiteSettingsPage() {
                 Branding
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <TextField
-                  label="Logo URL"
+                <ImageUpload
                   value={formData.logoUrl}
-                  onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
-                  fullWidth
-                  helperText="URL to your logo image (PNG, SVG recommended)"
+                  onChange={(url) => setFormData({ ...formData, logoUrl: url })}
+                  label="Logo"
+                  helperText="Drag and drop your logo here (PNG, SVG recommended)"
+                  maxSize={5}
                 />
 
-                <TextField
-                  label="Favicon URL"
+                <ImageUpload
                   value={formData.faviconUrl}
-                  onChange={(e) => setFormData({ ...formData, faviconUrl: e.target.value })}
-                  fullWidth
-                  helperText="URL to your favicon (16x16 or 32x32 px)"
+                  onChange={(url) => setFormData({ ...formData, faviconUrl: url })}
+                  label="Favicon"
+                  helperText="Drag and drop your favicon here (16x16 or 32x32 px)"
+                  maxSize={1}
                 />
+              </Box>
+            </Box>
 
-                {formData.logoUrl && (
-                  <Box>
-                    <Typography variant="body2" sx={{ mb: 1, color: 'text.secondary' }}>
-                      Logo Preview:
-                    </Typography>
-                    <Box
-                      component="img"
-                      src={formData.logoUrl}
-                      alt="Logo preview"
-                      sx={{ maxWidth: 200, maxHeight: 100, objectFit: 'contain' }}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  </Box>
-                )}
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                Footer Content
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <TextField
+                  label="Footer Description"
+                  value={formData.footerDescription}
+                  onChange={(e) => setFormData({ ...formData, footerDescription: e.target.value })}
+                  multiline
+                  rows={3}
+                  fullWidth
+                  helperText="Brief description shown in footer"
+                />
+                <TextField
+                  label="Copyright Text"
+                  value={formData.copyrightText}
+                  onChange={(e) => setFormData({ ...formData, copyrightText: e.target.value })}
+                  fullWidth
+                  helperText="Copyright notice (e.g., '© 2024 Kevincab. All rights reserved.')"
+                />
               </Box>
             </Box>
 

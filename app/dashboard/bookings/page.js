@@ -27,8 +27,10 @@ import {
   Alert,
   Snackbar,
   Divider,
+  Pagination,
+  InputAdornment,
 } from '@mui/material';
-import { Edit, Close, CheckCircle, Schedule, Cancel, Phone, LocationOn } from '@mui/icons-material';
+import { Edit, Close, CheckCircle, Schedule, Cancel, Phone, LocationOn, Search } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 
 export default function BookingsPage() {
@@ -41,6 +43,9 @@ export default function BookingsPage() {
   const [updateData, setUpdateData] = useState({ status: '', notes: '' });
   const [saving, setSaving] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 10 });
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -52,14 +57,24 @@ export default function BookingsPage() {
     if (session) {
       fetchBookings();
     }
-  }, [session]);
+  }, [session, page, searchTerm]);
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch('/api/bookings');
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: pagination.limit.toString(),
+      });
+      
+      if (searchTerm) {
+        params.append('search', searchTerm);
+      }
+      
+      const response = await fetch(`/api/bookings?${params}`);
       const data = await response.json();
       if (data.success) {
         setBookings(data.bookings);
+        setPagination(data.pagination);
       }
     } catch (error) {
       console.error('Error fetching bookings:', error);
@@ -95,13 +110,26 @@ export default function BookingsPage() {
       });
 
       if (response.ok) {
+        const data = await response.json();
         await fetchBookings();
         handleCloseDialog();
-        setSnackbar({
-          open: true,
-          message: 'Booking updated successfully!',
-          severity: 'success',
-        });
+        
+        if (data.whatsapp && data.whatsapp.success) {
+          if (data.whatsapp.whatsappUrl && !data.whatsapp.autoSendEnabled) {
+            window.open(data.whatsapp.whatsappUrl, '_blank');
+          }
+          setSnackbar({
+            open: true,
+            message: 'Booking updated and WhatsApp notification prepared!',
+            severity: 'success',
+          });
+        } else {
+          setSnackbar({
+            open: true,
+            message: 'Booking updated successfully!',
+            severity: 'success',
+          });
+        }
       } else {
         setSnackbar({
           open: true,
@@ -170,9 +198,42 @@ export default function BookingsPage() {
           Booking Management
         </Typography>
         <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '1.05rem' }}>
-          View and manage all customer bookings ({bookings.length} total)
+          View and manage all customer bookings ({pagination.total} total)
         </Typography>
       </Box>
+
+      <Card sx={{ mb: 3, borderRadius: 4, boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.06)' }}>
+        <CardContent sx={{ p: 2.5 }}>
+          <TextField
+            fullWidth
+            placeholder="Search by customer name, phone, location, or service type..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: '#999' }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                bgcolor: '#FAFAFA',
+                '&:hover': {
+                  bgcolor: '#F5F5F5',
+                },
+                '&.Mui-focused': {
+                  bgcolor: 'white',
+                },
+              },
+            }}
+          />
+        </CardContent>
+      </Card>
 
       <Card sx={{ borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.06)' }}>
         <CardContent sx={{ p: 0 }}>
@@ -283,6 +344,31 @@ export default function BookingsPage() {
           )}
         </CardContent>
       </Card>
+
+      {pagination.totalPages > 1 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Pagination
+            count={pagination.totalPages}
+            page={page}
+            onChange={(event, value) => setPage(value)}
+            color="primary"
+            size="large"
+            sx={{
+              '& .MuiPaginationItem-root': {
+                fontWeight: 600,
+                fontSize: '0.95rem',
+              },
+              '& .Mui-selected': {
+                bgcolor: 'black !important',
+                color: 'white',
+                '&:hover': {
+                  bgcolor: 'rgba(0,0,0,0.8) !important',
+                },
+              },
+            }}
+          />
+        </Box>
+      )}
 
       <Dialog 
         open={dialogOpen} 

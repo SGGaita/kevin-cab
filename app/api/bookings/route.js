@@ -27,6 +27,10 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const driverId = searchParams.get('driverId');
+    const search = searchParams.get('search');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const offset = (page - 1) * limit;
 
     let sql = `
       SELECT b.*, u.id as driver_id, u.name as driver_name, u.email as driver_email, u.phone as driver_phone
@@ -47,13 +51,49 @@ export async function GET(request) {
       params.push(driverId);
       paramCount++;
     }
+    if (search) {
+      sql += ` AND (
+        LOWER(b.customer_name) LIKE LOWER($${paramCount}) OR
+        LOWER(b.customer_phone) LIKE LOWER($${paramCount}) OR
+        LOWER(b.pickup_location) LIKE LOWER($${paramCount}) OR
+        LOWER(b.destination) LIKE LOWER($${paramCount}) OR
+        LOWER(b.service_type) LIKE LOWER($${paramCount})
+      )`;
+      params.push(`%${search}%`);
+      paramCount++;
+    }
 
-    sql += ' ORDER BY b.created_at DESC';
+    const countSql = `SELECT COUNT(*) as total FROM bookings b WHERE 1=1` + 
+      (status ? ` AND b.status = $1` : '') +
+      (driverId ? ` AND b.driver_id = $${status ? 2 : 1}` : '') +
+      (search ? ` AND (
+        LOWER(b.customer_name) LIKE LOWER($${paramCount - 1}) OR
+        LOWER(b.customer_phone) LIKE LOWER($${paramCount - 1}) OR
+        LOWER(b.pickup_location) LIKE LOWER($${paramCount - 1}) OR
+        LOWER(b.destination) LIKE LOWER($${paramCount - 1}) OR
+        LOWER(b.service_type) LIKE LOWER($${paramCount - 1})
+      )` : '');
+
+    const countResult = await query(countSql, params.slice(0, paramCount - 1));
+    const total = parseInt(countResult.rows[0].total);
+
+    sql += ` ORDER BY b.created_at DESC LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
+    params.push(limit, offset);
 
     const result = await query(sql, params);
     
     const bookings = result.rows.map(row => ({
-      ...row,
+      id: row.id,
+      customerName: row.customer_name,
+      customerPhone: row.customer_phone,
+      pickupLocation: row.pickup_location,
+      destination: row.destination,
+      serviceType: row.service_type,
+      bookingDate: row.booking_date,
+      status: row.status,
+      notes: row.notes,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
       driver: row.driver_id ? {
         id: row.driver_id,
         name: row.driver_name,
@@ -62,7 +102,16 @@ export async function GET(request) {
       } : null
     }));
 
-    return NextResponse.json({ success: true, bookings });
+    return NextResponse.json({ 
+      success: true, 
+      bookings,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     console.error('Fetch bookings error:', error);
     return NextResponse.json({ success: false, error: 'Failed to fetch bookings' }, { status: 500 });

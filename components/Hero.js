@@ -16,14 +16,14 @@ export default function Hero() {
   const fetchHeroData = async () => {
     try {
       const response = await fetch('/api/cms/hero');
-      const data = await response.json();
-      if (data.success && data.hero) {
+      const result = await response.json();
+      if (result.success && result.hero) {
         setHeroData({
-          title: data.hero.title,
-          subtitle: data.hero.subtitle,
-          description: data.hero.description,
-          ctaText: data.hero.ctaText,
-          imageUrl: data.hero.imageUrl || 'https://images.unsplash.com/photo-1549194388-f61be84a6e9e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
+          title: result.hero.title,
+          subtitle: result.hero.subtitle,
+          description: result.hero.description,
+          ctaText: result.hero.ctaText,
+          imageUrl: result.hero.imageUrl || 'https://images.unsplash.com/photo-1549194388-f61be84a6e9e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80',
         });
       } else {
         setHeroData({

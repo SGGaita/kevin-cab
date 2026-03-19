@@ -33,6 +33,11 @@ import {
   ContactMail,
   Info,
   Article as ArticleIcon,
+  Collections,
+  RateReview,
+  BarChart,
+  AccountCircle,
+  People,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 
@@ -130,20 +135,15 @@ export default function DashboardPage() {
     },
   ];
 
-  const quickActions = [
+  // Define all available quick actions - Top 4 most important for admin
+  const allQuickActions = [
     {
       title: 'Manage Bookings',
       description: 'View and update customer bookings',
       icon: <BookOnline sx={{ fontSize: 28 }} />,
       color: '#FFD700',
       path: '/dashboard/bookings',
-    },
-    {
-      title: 'Edit Hero Section',
-      description: 'Update homepage banner content',
-      icon: <ArticleIcon sx={{ fontSize: 28 }} />,
-      color: '#9C27B0',
-      path: '/dashboard/hero',
+      roles: ['admin', 'driver'], // Available to both admin and driver
     },
     {
       title: 'Manage Services',
@@ -151,36 +151,31 @@ export default function DashboardPage() {
       icon: <MiscellaneousServices sx={{ fontSize: 28 }} />,
       color: '#2196F3',
       path: '/dashboard/services',
-    },
-    {
-      title: 'About Section',
-      description: 'Edit company information',
-      icon: <Info sx={{ fontSize: 28 }} />,
-      color: '#00BCD4',
-      path: '/dashboard/about',
+      roles: ['admin'], // Admin only
     },
     {
       title: 'Contact Info',
-      description: 'Update contact details',
+      description: 'Update contact details & hours',
       icon: <ContactMail sx={{ fontSize: 28 }} />,
       color: '#FF5722',
       path: '/dashboard/contact',
+      roles: ['admin'], // Admin only
     },
     {
-      title: 'Social Media',
-      description: 'Manage social links',
-      icon: <Share sx={{ fontSize: 28 }} />,
-      color: '#E91E63',
-      path: '/dashboard/social',
-    },
-    {
-      title: 'Site Settings',
-      description: 'Configure branding & colors',
-      icon: <Settings sx={{ fontSize: 28 }} />,
-      color: '#607D8B',
-      path: '/dashboard/settings',
+      title: 'Account Settings',
+      description: 'Manage profile & password',
+      icon: <AccountCircle sx={{ fontSize: 28 }} />,
+      color: '#795548',
+      path: '/dashboard/account',
+      roles: ['admin', 'driver'], // Available to both admin and driver
     },
   ];
+
+  // Filter quick actions based on user role (case-insensitive)
+  const userRole = session?.user?.role?.toLowerCase() || 'driver';
+  const quickActions = allQuickActions.filter(action => 
+    action.roles.includes(userRole)
+  );
 
   if (status === 'loading' || loading) {
     return (
@@ -201,58 +196,57 @@ export default function DashboardPage() {
   return (
     <DashboardLayout session={session}>
       {/* Header Section */}
-      <Box sx={{ mb: 5 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      <Box sx={{ mb: 6 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
           <Box>
-            <Typography variant="h3" sx={{ fontWeight: 900, mb: 0.5, letterSpacing: -0.5 }}>
+            <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, letterSpacing: -1, color: '#1a1a1a' }}>
               Dashboard
             </Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '1.1rem' }}>
-              Welcome back, <strong>{session.user.name || session.user.email}</strong>
+            <Typography variant="body1" sx={{ color: '#666', fontSize: '1rem', fontWeight: 400 }}>
+              Welcome back, <Box component="span" sx={{ fontWeight: 600, color: '#333' }}>{session.user.name || session.user.email}</Box>
             </Typography>
           </Box>
-          <Chip 
-            label={new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-            sx={{ 
-              bgcolor: 'black', 
-              color: 'white', 
-              fontWeight: 'bold',
-              px: 2,
-              py: 2.5,
-              fontSize: '0.9rem',
-            }}
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5 }}>
+            <Typography variant="caption" sx={{ color: '#999', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              Today
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+            </Typography>
+          </Box>
         </Box>
       </Box>
 
       {/* Stats Cards */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 5 }}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5, mb: 6 }}>
         {statCards.map((stat, index) => (
           <Card
             key={index}
             sx={{
-              flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 12px)', lg: '1 1 calc(25% - 18px)' },
-              borderRadius: 3,
-              boxShadow: 'none',
+              flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 10px)', lg: '1 1 calc(25% - 15px)' },
+              borderRadius: 2,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
               background: 'white',
-              border: '1px solid #E0E0E0',
-              transition: 'all 0.2s ease',
+              border: '1px solid #f0f0f0',
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                borderColor: '#BDBDBD',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                transform: 'translateY(-2px)',
+                borderColor: '#e0e0e0',
               },
             }}
           >
-            <CardContent sx={{ p: 2.5 }}>
+            <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
                 <Box
                   sx={{
-                    background: stat.bgColor,
-                    color: stat.color,
-                    p: 1.2,
-                    borderRadius: 2,
+                    background: 'linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%)',
+                    color: '#333',
+                    p: 1.5,
+                    borderRadius: 1.5,
                     display: 'flex',
                     alignItems: 'center',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
                   }}
                 >
                   {stat.icon}
@@ -261,22 +255,23 @@ export default function DashboardPage() {
                   label={stat.trend}
                   size="small"
                   sx={{
-                    bgcolor: stat.trendUp ? 'rgba(76, 175, 80, 0.08)' : 'rgba(255, 152, 0, 0.08)',
-                    color: stat.trendUp ? '#66BB6A' : '#FFA726',
+                    bgcolor: stat.trendUp ? 'rgba(34, 197, 94, 0.1)' : 'rgba(251, 146, 60, 0.1)',
+                    color: stat.trendUp ? '#16a34a' : '#ea580c',
                     fontWeight: '600',
                     fontSize: '0.7rem',
-                    border: `1px solid ${stat.trendUp ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 152, 0, 0.2)'}`,
-                    height: '22px',
+                    border: 'none',
+                    height: '24px',
+                    px: 1.5,
                   }}
                 />
               </Box>
-              <Typography variant="body2" sx={{ color: '#9E9E9E', mb: 0.5, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
+              <Typography variant="body2" sx={{ color: '#999', mb: 0.5, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>
                 {stat.title}
               </Typography>
-              <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.3, letterSpacing: -0.5, color: '#212121' }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, letterSpacing: -1, color: '#1a1a1a' }}>
                 {stat.value}
               </Typography>
-              <Typography variant="caption" sx={{ color: '#BDBDBD', fontSize: '0.7rem' }}>
+              <Typography variant="caption" sx={{ color: '#999', fontSize: '0.75rem', fontWeight: 400 }}>
                 {stat.subtitle}
               </Typography>
             </CardContent>
@@ -285,9 +280,9 @@ export default function DashboardPage() {
       </Box>
 
       {/* Performance Overview */}
-      <Card sx={{ borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.08)', mb: 5, border: '1px solid rgba(0,0,0,0.06)' }}>
+      <Card sx={{ borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.06)', mb: 6, border: '1px solid #f0f0f0' }}>
         <CardContent sx={{ p: 4 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, color: '#1a1a1a', fontSize: '1.1rem' }}>
             Performance Overview
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -344,14 +339,14 @@ export default function DashboardPage() {
       </Card>
 
       {/* Latest Bookings */}
-      <Card sx={{ borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.08)', mb: 5, border: '1px solid rgba(0,0,0,0.06)' }}>
+      <Card sx={{ borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.06)', mb: 6, border: '1px solid #f0f0f0' }}>
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, color: '#1a1a1a', fontSize: '1.1rem' }}>
                 Latest Bookings
               </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              <Typography variant="body2" sx={{ color: '#666', fontSize: '0.9rem' }}>
                 Recent customer reservations
               </Typography>
             </Box>
@@ -472,71 +467,69 @@ export default function DashboardPage() {
       </Card>
 
       {/* Quick Actions */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, color: '#1a1a1a', fontSize: '1.25rem' }}>
           Quick Actions
         </Typography>
-        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+        <Typography variant="body2" sx={{ color: '#666', mb: 3, fontSize: '0.9rem' }}>
           Manage your website content and settings
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5 }}>
         {quickActions.map((action, index) => (
           <Card
             key={index}
             sx={{
-              flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 12px)', lg: '1 1 calc(33.333% - 16px)' },
-              borderRadius: 4,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-              border: '1px solid rgba(0,0,0,0.06)',
-              transition: 'all 0.3s ease',
+              flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 10px)', lg: '1 1 calc(33.333% - 14px)' },
+              borderRadius: 2,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+              border: '1px solid #f0f0f0',
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
               cursor: 'pointer',
+              overflow: 'hidden',
+              position: 'relative',
               '&:hover': {
-                boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
                 transform: 'translateY(-4px)',
                 borderColor: action.color,
+                '& .action-arrow': {
+                  transform: 'translateX(4px)',
+                },
               },
             }}
             onClick={() => router.push(action.path)}
           >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
+            <CardContent sx={{ p: 3.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2.5, mb: 3 }}>
                 <Box
                   sx={{
-                    bgcolor: `${action.color}15`,
+                    bgcolor: `${action.color}12`,
                     color: action.color,
                     p: 1.5,
-                    borderRadius: 2,
+                    borderRadius: 1.5,
                     display: 'flex',
                     alignItems: 'center',
+                    boxShadow: `0 2px 8px ${action.color}20`,
                   }}
                 >
                   {action.icon}
                 </Box>
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, fontSize: '1rem', color: '#1a1a1a' }}>
                     {action.title}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
+                  <Typography variant="body2" sx={{ color: '#666', fontSize: '0.85rem', lineHeight: 1.5 }}>
                     {action.description}
                   </Typography>
                 </Box>
               </Box>
-              <Button
-                endIcon={<ArrowForward />}
-                sx={{
-                  color: action.color,
-                  fontWeight: 'bold',
-                  textTransform: 'none',
-                  p: 0,
-                  '&:hover': {
-                    bgcolor: 'transparent',
-                  },
-                }}
-              >
-                Manage
-              </Button>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: action.color }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                  Manage
+                </Typography>
+                <ArrowForward className="action-arrow" sx={{ fontSize: 16, transition: 'transform 0.25s' }} />
+              </Box>
             </CardContent>
           </Card>
         ))}

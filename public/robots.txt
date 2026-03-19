@@ -1,0 +1,11 @@
+# robots.txt for Kevincab Tour and Travel
+User-agent: *
+Allow: /
+
+# Disallow admin and dashboard pages
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://kevincab.co.ke/sitemap.xml

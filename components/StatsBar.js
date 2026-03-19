@@ -1,8 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Box, Container, Typography } from '@mui/material';
 
-const stats = [
+const defaultStats = [
   { label: 'Counties', value: '47' },
   { label: 'Availability', value: '24/7' },
   { label: 'Customer Rating', value: '4.9/5' },
@@ -10,6 +11,24 @@ const stats = [
 ];
 
 export default function StatsBar() {
+  const [stats, setStats] = useState(defaultStats);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/cms/stats');
+      const result = await response.json();
+      if (result.success && result.stats && result.stats.length > 0) {
+        setStats(result.stats);
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
   return (
     <Box sx={{ bgcolor: 'black', py: 6 }}>
       <Container maxWidth="lg">

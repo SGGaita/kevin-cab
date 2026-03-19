@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, MenuItem, Card, CardContent } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
 
 export default function BookingForm() {
   const [formStatus, setFormStatus] = useState('idle');
+  const [whatsappNumber, setWhatsappNumber] = useState('254716406998');
+  const [bookingFormHeading, setBookingFormHeading] = useState('Instant Booking');
+  const [bookingFormSubtitle, setBookingFormSubtitle] = useState('Available 24/7 across all 47 counties.');
   const [formData, setFormData] = useState({
     customerName: '',
     customerPhone: '',
@@ -14,6 +17,30 @@ export default function BookingForm() {
     bookingDate: '',
     serviceType: 'Economy (4 Seater)',
   });
+
+  useEffect(() => {
+    fetchWhatsAppNumber();
+  }, []);
+
+  const fetchWhatsAppNumber = async () => {
+    try {
+      const response = await fetch('/api/cms/contact');
+      const result = await response.json();
+      if (result.success && result.data) {
+        if (result.data.whatsapp_number) {
+          setWhatsappNumber(result.data.whatsapp_number);
+        }
+        if (result.data.booking_form_heading) {
+          setBookingFormHeading(result.data.booking_form_heading);
+        }
+        if (result.data.booking_form_subtitle) {
+          setBookingFormSubtitle(result.data.booking_form_subtitle);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching contact data:', error);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,7 +68,9 @@ export default function BookingForm() {
           `\n` +
           `_Please acknowledge receipt of this trip._`;
         
-        const whatsappUrl = `https://wa.me/254716406998?text=${encodeURIComponent(whatsappMessage)}`;
+        // Clean phone number - remove all non-numeric characters
+        const cleanNumber = whatsappNumber.replace(/\D/g, '');
+        const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(whatsappMessage)}`;
         window.open(whatsappUrl, '_blank');
 
         setFormStatus('success');
@@ -103,10 +132,10 @@ export default function BookingForm() {
       <CardContent sx={{ p: { xs: 4, md: 6 } }}>
         <Box sx={{ mb: 5, pb: 3, borderBottom: '2px solid', borderColor: 'secondary.main' }}>
           <Typography variant="h3" sx={{ fontWeight: 900, mb: 2, letterSpacing: -1 }}>
-            Instant Booking
+            {bookingFormHeading}
           </Typography>
           <Typography variant="body1" sx={{ color: 'text.secondary', fontSize: '1.1rem' }}>
-            Available 24/7 across all 47 counties.
+            {bookingFormSubtitle}
           </Typography>
         </Box>
 

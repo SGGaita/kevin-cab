@@ -183,7 +183,7 @@ export default function SocialMediaPage() {
 
       <Card sx={{ borderRadius: 3, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
         <CardContent>
-          {socialLinks.length === 0 ? (
+          {!socialLinks || socialLinks.length === 0 ? (
             <Box sx={{ py: 8, textAlign: 'center' }}>
               <Typography variant="h6" sx={{ color: 'text.secondary' }}>
                 No social links yet. Click "Add Link" to create one.

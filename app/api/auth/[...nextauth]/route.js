@@ -3,7 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { query } from '@/lib/db';
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -43,11 +43,25 @@ const handler = NextAuth({
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
       }
+      
+      // Refresh role from database on update trigger or periodically
+      if (trigger === 'update' || !token.roleLastChecked || Date.now() - token.roleLastChecked > 60000) {
+        try {
+          const result = await query('SELECT role FROM users WHERE id = $1', [token.id]);
+          if (result.rows.length > 0) {
+            token.role = result.rows[0].role;
+            token.roleLastChecked = Date.now();
+          }
+        } catch (error) {
+          console.error('Error refreshing user role:', error);
+        }
+      }
+      
       return token;
     },
     async session({ session, token }) {
@@ -65,6 +79,8 @@ const handler = NextAuth({
     strategy: 'jwt',
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

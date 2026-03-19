@@ -1,34 +1,92 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import { Flight, Hotel, Park } from '@mui/icons-material';
+import { Flight, Hotel, Park, DirectionsCar, LocalTaxi, Explore } from '@mui/icons-material';
 
-const services = [
+const iconMap = {
+  Flight: Flight,
+  Hotel: Hotel,
+  Park: Park,
+  DirectionsCar: DirectionsCar,
+  LocalTaxi: LocalTaxi,
+  Explore: Explore,
+};
+
+const defaultServices = [
   {
-    icon: Flight,
+    icon: 'Flight',
     title: 'Airport & Hotel Transfers',
     description: 'Reliable transfers from airport to hotel, guesthouse to airport, ensuring timely and comfortable transportation with professional drivers.',
   },
   {
-    icon: Hotel,
+    icon: 'Hotel',
     title: 'Transfer from Hotel to Hotel',
     description: 'Seamless transfers between hotels for your convenience during your stay.',
   },
   {
-    icon: Park,
+    icon: 'Park',
     title: 'National Park Tours & Transfers',
     description: 'Comfortable transportation from your hotel to national parks and guided safari tours to experience the beauty of Kenya\'s wildlife.',
   },
 ];
 
+const defaultSectionHeading = {
+  overline: 'WE DO MORE',
+  heading: 'THAN YOU WISH',
+  description: 'Professional transfer services and exciting national park tours across Kenya. Your trusted travel partner since 2018.',
+  imageUrl: '/uploads/service-1.png'
+};
+
 export default function Services() {
+  const [services, setServices] = useState(defaultServices);
+  const [sectionHeading, setSectionHeading] = useState(defaultSectionHeading);
+
+  useEffect(() => {
+    fetchServices();
+    fetchSectionHeading();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetch('/api/cms/services');
+      const result = await response.json();
+      if (result.success && result.services && result.services.length > 0) {
+        setServices(result.services.map(s => ({
+          icon: s.icon || 'Flight',
+          title: s.title,
+          description: s.description
+        })));
+      }
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    }
+  };
+
+  const fetchSectionHeading = async () => {
+    try {
+      const response = await fetch('/api/cms/section-headings?section=services');
+      const result = await response.json();
+      if (result.success && result.data) {
+        setSectionHeading({
+          overline: result.data.overline || defaultSectionHeading.overline,
+          heading: result.data.heading || defaultSectionHeading.heading,
+          description: result.data.description || defaultSectionHeading.description,
+          imageUrl: result.data.image_url || defaultSectionHeading.imageUrl
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching section heading:', error);
+    }
+  };
+
   return (
     <Box id="services" sx={{ py: 12, bgcolor: 'white' }}>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
         <Box sx={{ flex: { xs: '1 1 100%', lg: '1 1 40%' } }}>
           <Box
             component="img"
-            src="/uploads/service-1.png"
+            src={sectionHeading.imageUrl}
             alt="Kevincab Taxi"
             sx={{
               width: '100%',
@@ -44,17 +102,19 @@ export default function Services() {
             variant="overline" 
             sx={{ color: 'text.secondary', fontWeight: 'bold', letterSpacing: 2, fontSize: '0.85rem' }}
           >
-            WE DO MORE
+            {sectionHeading.overline}
           </Typography>
           <Typography variant="h2" sx={{ mt: 1, mb: 3, fontWeight: 900, color: 'text.primary', letterSpacing: -1 }}>
-            THAN YOU WISH
+            {sectionHeading.heading}
           </Typography>
           <Typography variant="body1" sx={{ color: 'text.secondary', mb: 6, lineHeight: 1.8 }}>
-            Professional transfer services and exciting national park tours across Kenya. Your trusted travel partner since 2018.
+            {sectionHeading.description}
           </Typography>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4, mb: 6 }}>
-            {services.map((service, index) => (
+            {services.map((service, index) => {
+              const IconComponent = iconMap[service.icon] || Flight;
+              return (
               <Box key={index} sx={{ display: 'flex', gap: 3 }}>
                 <Box 
                   sx={{ 
@@ -69,7 +129,7 @@ export default function Services() {
                     justifyContent: 'center',
                   }}
                 >
-                  <service.icon 
+                  <IconComponent 
                     sx={{ 
                       fontSize: 28,
                       color: 'secondary.main',
@@ -85,7 +145,8 @@ export default function Services() {
                   </Typography>
                 </Box>
               </Box>
-            ))}
+            );
+            })}
           </Box>
 
           <Button

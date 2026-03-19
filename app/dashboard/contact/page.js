@@ -12,6 +12,8 @@ import {
   Button,
   CircularProgress,
   Alert,
+  Divider,
+  Grid,
 } from '@mui/material';
 import { Save } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -26,7 +28,20 @@ export default function ContactInfoPage() {
     email: '',
     phone: '',
     address: '',
-    workingHours: '',
+    whatsappNumber: '',
+    headingText: '',
+    subtitleText: '',
+    bookingFormHeading: '',
+    bookingFormSubtitle: '',
+  });
+  const [workingHours, setWorkingHours] = useState({
+    monday: { open: '08:00', close: '18:00', closed: false },
+    tuesday: { open: '08:00', close: '18:00', closed: false },
+    wednesday: { open: '08:00', close: '18:00', closed: false },
+    thursday: { open: '08:00', close: '18:00', closed: false },
+    friday: { open: '08:00', close: '18:00', closed: false },
+    saturday: { open: '09:00', close: '17:00', closed: false },
+    sunday: { open: '09:00', close: '17:00', closed: false },
   });
 
   useEffect(() => {
@@ -44,20 +59,47 @@ export default function ContactInfoPage() {
   const fetchContactInfo = async () => {
     try {
       const response = await fetch('/api/cms/contact');
-      const data = await response.json();
-      if (data.success && data.contact) {
+      const result = await response.json();
+      if (result.success && result.data) {
         setFormData({
-          email: data.contact.email,
-          phone: data.contact.phone,
-          address: data.contact.address,
-          workingHours: data.contact.workingHours,
+          email: result.data.email || '',
+          phone: result.data.phone || '',
+          address: result.data.address || '',
+          whatsappNumber: result.data.whatsapp_number || '',
+          headingText: result.data.heading_text || '',
+          subtitleText: result.data.subtitle_text || '',
+          bookingFormHeading: result.data.booking_form_heading || '',
+          bookingFormSubtitle: result.data.booking_form_subtitle || '',
         });
+        
+        if (result.data.working_hours) {
+          try {
+            const hours = typeof result.data.working_hours === 'string' 
+              ? JSON.parse(result.data.working_hours) 
+              : result.data.working_hours;
+            if (hours && typeof hours === 'object') {
+              setWorkingHours(hours);
+            }
+          } catch (e) {
+            console.error('Error parsing working hours:', e);
+          }
+        }
       }
     } catch (error) {
       console.error('Error fetching contact info:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleWorkingHoursChange = (day, field, value) => {
+    setWorkingHours({
+      ...workingHours,
+      [day]: {
+        ...workingHours[day],
+        [field]: value,
+      },
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -69,7 +111,10 @@ export default function ContactInfoPage() {
       const response = await fetch('/api/cms/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          workingHours: workingHours,
+        }),
       });
 
       const data = await response.json();
@@ -147,13 +192,114 @@ export default function ContactInfoPage() {
               helperText="Physical business address"
             />
 
+            <Divider sx={{ my: 2 }} />
+
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                Working Hours
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+                Set opening and closing times for each day of the week
+              </Typography>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {Object.entries(workingHours).map(([day, hours]) => (
+                  <Card key={day} sx={{ bgcolor: '#f5f5f5', boxShadow: 'none' }}>
+                    <CardContent sx={{ py: 2 }}>
+                      <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12} sm={2.5}>
+                          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'capitalize', minWidth: '100px' }}>
+                            {day}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={5} sm={3}>
+                          <TextField
+                            label="Open"
+                            type="time"
+                            value={hours.open}
+                            onChange={(e) => handleWorkingHoursChange(day, 'open', e.target.value)}
+                            disabled={hours.closed}
+                            fullWidth
+                            size="small"
+                            InputLabelProps={{ shrink: true }}
+                          />
+                        </Grid>
+                        <Grid item xs={5} sm={3}>
+                          <TextField
+                            label="Close"
+                            type="time"
+                            value={hours.close}
+                            onChange={(e) => handleWorkingHoursChange(day, 'close', e.target.value)}
+                            disabled={hours.closed}
+                            fullWidth
+                            size="small"
+                            InputLabelProps={{ shrink: true }}
+                          />
+                        </Grid>
+                        <Grid item xs={2} sm={3.5} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                          <Button
+                            variant={hours.closed ? 'outlined' : 'contained'}
+                            color={hours.closed ? 'primary' : 'error'}
+                            onClick={() => handleWorkingHoursChange(day, 'closed', !hours.closed)}
+                            size="small"
+                            sx={{ minWidth: '90px' }}
+                          >
+                            {hours.closed ? 'Closed' : 'Open'}
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
             <TextField
-              label="Working Hours"
-              value={formData.workingHours}
-              onChange={(e) => setFormData({ ...formData, workingHours: e.target.value })}
-              required
+              label="WhatsApp Number"
+              value={formData.whatsappNumber}
+              onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
               fullWidth
-              helperText="e.g., 'Mon-Fri: 8AM-6PM, Sat-Sun: 9AM-5PM'"
+              helperText="WhatsApp contact number (e.g., 254716406998)"
+            />
+
+            <TextField
+              label="Contact Section Heading"
+              value={formData.headingText}
+              onChange={(e) => setFormData({ ...formData, headingText: e.target.value })}
+              fullWidth
+              helperText="Main heading for contact section"
+            />
+
+            <TextField
+              label="Contact Section Subtitle"
+              value={formData.subtitleText}
+              onChange={(e) => setFormData({ ...formData, subtitleText: e.target.value })}
+              fullWidth
+              helperText="Subtitle for contact section"
+            />
+
+            <Divider sx={{ my: 2 }} />
+
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+              Booking Form Content
+            </Typography>
+
+            <TextField
+              label="Booking Form Heading"
+              value={formData.bookingFormHeading}
+              onChange={(e) => setFormData({ ...formData, bookingFormHeading: e.target.value })}
+              fullWidth
+              helperText="Main heading for booking form (e.g., 'Instant Booking')"
+            />
+
+            <TextField
+              label="Booking Form Subtitle"
+              value={formData.bookingFormSubtitle}
+              onChange={(e) => setFormData({ ...formData, bookingFormSubtitle: e.target.value })}
+              fullWidth
+              helperText="Subtitle for booking form (e.g., 'Available 24/7 across all 47 counties.')"
             />
 
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>

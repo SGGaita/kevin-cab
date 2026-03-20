@@ -16,7 +16,8 @@
     "build:production": "npm install && npm run build",
     "deploy:install": "npm install --omit=dev --production",
     "deploy:start": "NODE_ENV=production node server.js",
-    "prod": "NODE_ENV=production node server.js"
+    "prod": "NODE_ENV=production node server.js",
+    "postinstall": "echo Installation complete. For shared hosting: Run database/complete-schema.sql in phpPgAdmin, then visit /setup to create admin."
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",

@@ -7,30 +7,32 @@ import bcrypt from 'bcryptjs';
 export async function PATCH(request) {
   try {
     const session = await getServerSession(authOptions);
-    console.log('Password change - Session:', session);
-
-    if (!session) {
+    
+    if (!session?.user?.email) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { currentPassword, newPassword } = body;
-    console.log('Password change request for user:', session.user.id);
+    const { currentPassword, newPassword, isFirstLogin } = body;
 
-    if (!currentPassword || !newPassword) {
-      return NextResponse.json({ success: false, error: 'Current and new passwords are required' }, { status: 400 });
+    if (!newPassword) {
+      return NextResponse.json(
+        { success: false, error: 'New password is required' },
+        { status: 400 }
+      );
     }
 
     if (newPassword.length < 6) {
-      return NextResponse.json({ success: false, error: 'New password must be at least 6 characters' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: 'New password must be at least 6 characters long' },
+        { status: 400 }
+      );
     }
 
-    // Get current user with password
     const userResult = await query(
-      'SELECT id, password FROM users WHERE id = $1',
-      [session.user.id]
+      'SELECT id, password, first_login FROM users WHERE email = $1',
+      [session.user.email]
     );
-    console.log('User found:', userResult.rows.length > 0);
 
     if (userResult.rows.length === 0) {
       return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
@@ -38,31 +40,40 @@ export async function PATCH(request) {
 
     const user = userResult.rows[0];
 
-    // Verify current password
-    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-    console.log('Current password valid:', isValidPassword);
+    if (!isFirstLogin) {
+      if (!currentPassword) {
+        return NextResponse.json(
+          { success: false, error: 'Current password is required' },
+          { status: 400 }
+        );
+      }
 
-    if (!isValidPassword) {
-      return NextResponse.json({ success: false, error: 'Current password is incorrect' }, { status: 400 });
+      const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+
+      if (!isPasswordValid) {
+        return NextResponse.json(
+          { success: false, error: 'Current password is incorrect' },
+          { status: 400 }
+        );
+      }
     }
 
-    // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update password (remove updated_at if column doesn't exist)
-    const updateResult = await query(
-      'UPDATE users SET password = $1 WHERE id = $2 RETURNING id',
-      [hashedPassword, session.user.id]
+    await query(
+      'UPDATE users SET password = $1, first_login = false, updated_at = NOW() WHERE id = $2',
+      [hashedPassword, user.id]
     );
-    console.log('Password updated:', updateResult.rows.length > 0);
 
     return NextResponse.json({
       success: true,
-      message: 'Password changed successfully',
+      message: 'Password updated successfully',
     });
   } catch (error) {
-    console.error('Error changing password:', error);
-    console.error('Error stack:', error.stack);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error('Password update error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update password' },
+      { status: 500 }
+    );
   }
 }

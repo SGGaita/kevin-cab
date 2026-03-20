@@ -4,7 +4,7 @@ import { prepareBookingNotification, sendWhatsAppMessage } from '@/lib/whatsapp'
 
 export async function PATCH(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { status, driverId, notes } = body;
     

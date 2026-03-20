@@ -13,7 +13,7 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { name, email, password, role, phone } = body;
 
@@ -77,7 +77,7 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Prevent admin from deleting themselves
     if (id === session.user.id) {
